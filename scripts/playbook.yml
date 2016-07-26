@@ -50,7 +50,7 @@
     ### asterisk
     - name: copy Asterisk Docker context and build if changed
       copy: src=../asterisk/ dest=/usr/src/asterisk/
-      notify: build Asterisk image
+      notify: build Asterisk Docker image
       tags: asterisk
 
   #-*-* handlers *-*-#
