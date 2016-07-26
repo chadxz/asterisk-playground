@@ -1,0 +1,75 @@
+---
+- hosts: all
+
+  #-*-* vars *-*-#
+  vars:
+    VM_USER: cmcelligott
+
+  #-*-* tasks *-*-#
+  tasks:
+
+    ### apt
+    - name: install apt upgrades
+      apt: name={{item}} update_cache=yes
+      with_items:
+        - apt-transport-https
+        - ca-certificates
+
+    ### python
+    - name: install python
+      apt: name={{item}} update_cache=yes
+      with_items:
+        - python-dev
+
+    - name: install pip
+      easy_install: name=pip
+
+    ### docker
+    - name: install Docker apt-key
+      apt_key:
+        id: 58118E89F3A912897C070ADBF76221572C52609D
+        keyserver: hkp://p80.pool.sks-keyservers.net:80
+
+    - name: install Docker apt repo
+      apt_repository:
+        repo: deb https://apt.dockerproject.org/repo debian-jessie main
+
+    - name: install Docker
+      apt: name=docker-engine update_cache=yes
+
+    - name: start Docker
+      service: name=docker state=started
+
+    - name: add users to docker group
+      user: name={{VM_USER}} groups=docker append=yes
+      notify: restart Docker
+
+    - name: install Docker python modules for Ansible
+      pip: name=docker-py
+
+    ### asterisk
+    - name: copy Asterisk Docker context and build if changed
+      copy: src=../asterisk/ dest=/usr/src/asterisk/
+      notify: build Asterisk image
+
+
+  #-*-* handlers *-*-#
+  handlers:
+    - name: restart Docker
+      service: name=docker state=restarted
+
+    - name: build Asterisk Docker image
+      docker_image:
+        name: asterisk
+        path: /usr/src/asterisk/
+        state: present
+        force: yes
+      notify: start Asterisk Docker container
+
+    - name: start Asterisk Docker container
+      docker_container:
+        name: asterisk
+        image: asterisk
+        state: started
+        restart_policy: always
+        network_mode: host
