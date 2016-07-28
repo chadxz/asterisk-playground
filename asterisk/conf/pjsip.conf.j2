@@ -3,17 +3,23 @@ type=transport
 protocol=udp
 bind=0.0.0.0:5060
 
-[6001]
+[ep](!)
 type=endpoint
-context=from-internal
 disallow=all
 allow=g722,ulaw,alaw
+direct_media=no
+rtp_symmetric=yes
+
+[auth](!)
+type=auth
+auth_type=userpass
+
+[6001](ep)
+context=from-internal
 auth=6001
 aors=6001
 
-[6001]
-type=auth
-auth_type=userpass
+[6001](auth)
 username=6001
 password=password
 
@@ -21,18 +27,12 @@ password=password
 type=aor
 max_contacts=1
 
-[6002]
-type=endpoint
+[6002](ep)
 context=from-internal
-disallow=all
-allow=g722,ulaw,alaw
-direct_media=no
 auth=6002
 aors=6002
 
-[6002]
-type=auth
-auth_type=userpass
+[6002](auth)
 username=6002
 password=password
 
