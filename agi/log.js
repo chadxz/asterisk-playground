@@ -5,10 +5,10 @@ const bformat = require('bunyan-format');
 const config = require('config');
 
 function createLogger() {
-    const { pretty, colors, level } = config.log;
+    const { pretty, color, level } = config.log;
 
     const stream = pretty ?
-        bformat({ colors, outputMode: 'short' }) :
+        bformat({ color, outputMode: 'short' }) :
         process.stdout;
 
     const useStream = level !== 'silent';

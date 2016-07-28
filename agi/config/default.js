@@ -5,6 +5,6 @@ module.exports = {
         logUncaughtException: true,
         pretty: true,
         level: 'debug',
-        colors: true
+        color: true
     }
 };
