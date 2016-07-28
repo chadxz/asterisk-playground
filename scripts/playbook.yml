@@ -50,13 +50,8 @@
     ### asterisk
     - name: copy Asterisk Docker context and build if changed
       copy: src=../asterisk/ dest=/usr/src/asterisk/
-      notify: build Asterisk Docker image
       tags: asterisk
-
-  #-*-* handlers *-*-#
-  handlers:
-    - name: restart Docker
-      service: name=docker state=restarted
+      register: asterisk
 
     - name: build Asterisk Docker image
       docker_image:
@@ -64,7 +59,7 @@
         path: /usr/src/asterisk/
         state: present
         force: yes
-      notify: start Asterisk Docker container
+      when: asterisk.changed
 
     - name: start Asterisk Docker container
       docker_container:
@@ -73,3 +68,40 @@
         state: started
         restart_policy: always
         network_mode: host
+      when: asterisk.changed
+
+    ### agi
+    - name: create tar file of application source
+      become: false
+      local_action: command tar -zvcf /tmp/agi.tgz --exclude 'node_modules' -C ../agi .
+      register: agi
+
+    - name: create agi application directory
+      file: path=/usr/src/agi state=directory mode=0755
+      when: agi.changed
+
+    - name: extract tarball to application directory
+      unarchive: src=/tmp/agi.tgz dest=/usr/src/agi
+      when: agi.changed
+
+    - name: build agi Docker image
+      docker_image:
+        name: agi
+        path: /usr/src/agi/
+        state: present
+        force: yes
+      when: agi.changed
+
+    - name: start agi Docker container
+      docker_container:
+        name: agi
+        image: agi
+        state: started
+        restart_policy: always
+        network_mode: host
+      when: agi.changed
+
+  #-*-* handlers *-*-#
+  handlers:
+    - name: restart Docker
+      service: name=docker state=restarted

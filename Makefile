@@ -3,7 +3,12 @@ all:
 	ansible-playbook playbook.yml
 .PHONY: all
 
-update:
+asterisk:
 	cd scripts && \
 	ansible-playbook --tags asterisk playbook.yml
-.PHONY: update
+.PHONY: asterisk
+
+agi:
+	cd scripts && \
+	ansible-playbook --tags agi playbook.yml
+.PHONY: agi

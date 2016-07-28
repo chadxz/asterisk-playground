@@ -15,4 +15,4 @@ COPY . /usr/src/app
 
 EXPOSE 4573
 
-CMD [ "node", "app.js" ]
+CMD [ "node", "server.js" ]
