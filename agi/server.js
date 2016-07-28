@@ -17,7 +17,7 @@ AGI.createServer(config.port, conn => {
     log.debug({ variables }, 'new AGI connection');
 
     conn.answer().then(() => {
-        return conn.exec('PLAYBACK transfer');
+        return conn.exec('PLAYBACK silence 3');
     }).then(() => {
         return conn.exec('MUSICONHOLD');
     }).catch(err => {
