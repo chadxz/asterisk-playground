@@ -115,6 +115,8 @@
         path: /usr/src/{{REPO_NAME}}/agi
         state: present
         force: yes
+        env:
+          NODE_ENV: production
       when: source.changed
       tags: deploy
 
