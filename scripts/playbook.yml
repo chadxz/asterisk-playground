@@ -115,8 +115,6 @@
         path: /usr/src/{{REPO_NAME}}/agi
         state: present
         force: yes
-        env:
-          NODE_ENV: production
       when: source.changed
       tags: deploy
 
@@ -127,5 +125,7 @@
         state: started
         restart_policy: always
         network_mode: host
+        env:
+          NODE_ENV: production
       when: source.changed
       tags: deploy
