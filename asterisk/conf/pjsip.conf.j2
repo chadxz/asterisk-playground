@@ -1,7 +1,7 @@
 [transport-udp]
 type=transport
 protocol=udp
-bind=0.0.0.0
+bind=0.0.0.0:5060
 
 [6001]
 type=endpoint
@@ -34,6 +34,7 @@ type=auth
 auth_type=userpass
 username=6002
 password=password
+rtp_symmetric=yes
 
 [6002]
 type=aor
