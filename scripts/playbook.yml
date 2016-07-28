@@ -69,7 +69,6 @@
 
     - name: add users to docker group
       user: name={{VM_USER}} groups=docker append=yes
-      notify: restart Docker
 
     - name: install Docker python modules for Ansible
       pip: name=docker-py
@@ -128,8 +127,3 @@
         network_mode: host
       when: source.changed
       tags: deploy
-
-  #-*-* handlers *-*-#
-  handlers:
-    - name: restart Docker
-      service: name=docker state=restarted
