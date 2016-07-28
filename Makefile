@@ -3,12 +3,7 @@ all:
 	ansible-playbook playbook.yml
 .PHONY: all
 
-asterisk:
+deploy:
 	cd scripts && \
-	ansible-playbook --tags asterisk playbook.yml
-.PHONY: asterisk
-
-agi:
-	cd scripts && \
-	ansible-playbook --tags agi playbook.yml
-.PHONY: agi
+	ansible-playbook --tags deploy playbook.yml
+.PHONY: deploy

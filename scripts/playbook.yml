@@ -4,6 +4,7 @@
   #-*-* vars *-*-#
   vars:
     VM_USER: cmcelligott
+    REPO_NAME: chadsterisk
 
   #-*-* tasks *-*-#
   tasks:
@@ -15,14 +16,40 @@
         - apt-transport-https
         - ca-certificates
 
-    ### python
-    - name: install python
+    ### dependencies
+    - name: install dev dependencies
       apt: name={{item}} update_cache=yes
       with_items:
         - python-dev
+        - git
 
-    - name: install pip
+    - name: easy_install pip
       easy_install: name=pip
+
+    ## setup git server
+    - name: add git user
+      user: name=git
+
+    - name: create .ssh directory for git user
+      file: path=/home/git/.ssh owner=git group=git mode=0700 state=directory
+
+    - name: allow {{VM_USER}} to access git server via ssh
+      copy:
+        src: ~/.ssh/id_rsa.pub
+        dest: /home/git/.ssh/authorized_keys
+        mode: 0600
+        owner: git
+        group: git
+
+    - name: create directory for git repository
+      file: path=/opt/git/{{REPO_NAME}}.git owner=git group=git state=directory
+
+    - name: create bare git repository
+      become_user: git
+      command: git init --bare /opt/git/{{REPO_NAME}}.git
+      args:
+        creates: /opt/git/{{REPO_NAME}}.git/HEAD
+        warn: no
 
     ### docker
     - name: install Docker apt-key
@@ -47,19 +74,30 @@
     - name: install Docker python modules for Ansible
       pip: name=docker-py
 
-    ### asterisk
-    - name: copy Asterisk Docker context and build if changed
-      copy: src=../asterisk/ dest=/usr/src/asterisk/
-      tags: asterisk
-      register: asterisk
+    ### clone source
+    - name: push source to remote
+      become: false
+      tags: deploy
+      local_action: >
+        command warn="no" git push
+          --repo git@{{ ansible_default_ipv4.address }}:/opt/git/{{REPO_NAME}}.git
 
+    - name: pull source into working directory
+      git:
+        repo: /opt/git/{{REPO_NAME}}.git/
+        dest: /usr/src/{{REPO_NAME}}/
+      register: source
+      tags: deploy
+
+    ### asterisk
     - name: build Asterisk Docker image
       docker_image:
         name: asterisk
         path: /usr/src/asterisk/
         state: present
         force: yes
-      when: asterisk.changed
+      when: source.changed
+      tags: deploy
 
     - name: start Asterisk Docker container
       docker_container:
@@ -68,29 +106,18 @@
         state: started
         restart_policy: always
         network_mode: host
-      when: asterisk.changed
+      when: source.changed
+      tags: deploy
 
     ### agi
-    - name: create tar file of application source
-      become: false
-      local_action: command tar -zvcf /tmp/agi.tgz --exclude 'node_modules' -C ../agi .
-      register: agi
-
-    - name: create agi application directory
-      file: path=/usr/src/agi state=directory mode=0755
-      when: agi.changed
-
-    - name: extract tarball to application directory
-      unarchive: src=/tmp/agi.tgz dest=/usr/src/agi
-      when: agi.changed
-
     - name: build agi Docker image
       docker_image:
         name: agi
-        path: /usr/src/agi/
+        path: /usr/src/{{REPO_NAME}}/agi
         state: present
         force: yes
-      when: agi.changed
+      when: source.changed
+      tags: deploy
 
     - name: start agi Docker container
       docker_container:
@@ -99,7 +126,8 @@
         state: started
         restart_policy: always
         network_mode: host
-      when: agi.changed
+      when: source.changed
+      tags: deploy
 
   #-*-* handlers *-*-#
   handlers:
