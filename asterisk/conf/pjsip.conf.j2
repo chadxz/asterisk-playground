@@ -26,6 +26,7 @@ type=endpoint
 context=from-internal
 disallow=all
 allow=g722,ulaw,alaw
+rtp_symmetric=yes
 auth=6002
 aors=6002
 
@@ -34,7 +35,6 @@ type=auth
 auth_type=userpass
 username=6002
 password=password
-rtp_symmetric=yes
 
 [6002]
 type=aor
