@@ -93,7 +93,7 @@
     - name: build Asterisk Docker image
       docker_image:
         name: asterisk
-        path: /usr/src/asterisk/
+        path: /usr/src/{{REPO_NAME}}/asterisk
         state: present
         force: yes
       when: source.changed
