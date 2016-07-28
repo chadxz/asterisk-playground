@@ -4,9 +4,11 @@ const name = require('./package.json').name;
 const bformat = require('bunyan-format');
 const config = require('config');
 
-function createLogger({ level }) {
-    const stream = config.log.pretty ?
-        bformat({ outputMode: 'short' }) :
+function createLogger() {
+    const { pretty, colors, level } = config.log;
+
+    const stream = pretty ?
+        bformat({ colors, outputMode: 'short' }) :
         process.stdout;
 
     const useStream = level !== 'silent';
@@ -17,7 +19,7 @@ function createLogger({ level }) {
     });
 }
 
-const log = createLogger({ level: config.log.level });
+const log = createLogger();
 
 if (config.log.logUncaughtException) {
     process.on('uncaughtException', err => {
