@@ -73,6 +73,21 @@
     - name: install Docker python modules for Ansible
       pip: name=docker-py
 
+    ### cAdvisor
+    - name: cAdvisor
+      docker_container:
+        name: cadvisor
+        image: google/cadvisor:latest
+        state: started
+        restart_policy: always
+        volumes:
+          - /:/rootfs:ro
+          - /var/run:/var/run:rw
+          - /sys:/sys:ro
+          - /var/lib/docker:/var/lib/docker:ro
+        ports:
+          - 8080:8080
+
     ### clone source
     - name: push source to remote
       become: false
