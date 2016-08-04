@@ -86,8 +86,8 @@
       when: grub_conf.changed
 
     - name: restart machine if grub config changed
-      command: reboot
-      async: 0
+      command: sleep 2 && reboot
+      async: 1
       poll: 0
       ignore_errors: true
       when: grub_conf.changed
@@ -122,7 +122,7 @@
 
     - name: start cAdvisor
       service: name=cadvisor state=started
-      
+
     ### clone source
     - name: push source to remote
       become: false
