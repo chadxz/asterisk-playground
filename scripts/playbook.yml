@@ -105,7 +105,7 @@
         dest: /usr/sbin/docker-gc
         mode: 0755
 
-    - name: install docker-gc in crontab # hour 8 UTC should be hour 3 CT
+    - name: install docker-gc in crontab to run every two hours
       cron: name=docker-gc minute=0 hour=*/2 job=/usr/sbin/docker-gc
       become: yes
 
