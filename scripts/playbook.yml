@@ -59,13 +59,13 @@
 
     - name: install Docker apt repo
       apt_repository:
-        repo: deb https://apt.dockerproject.org/repo debian-jessie main
+        repo: deb https://apt.dockerproject.org/repo ubuntu-xenial main
 
     - name: install Docker
       apt: name=docker-engine update_cache=yes
 
     - name: start Docker
-      service: name=docker state=started
+      service: name=docker=1.12 state=started
 
     - name: add users to docker group
       user: name={{VM_USER}} groups=docker append=yes
@@ -73,19 +73,51 @@
     - name: install Docker python modules for Ansible
       pip: name=docker-py
 
+    - name: enable memory cgroup and swap accounting for Docker
+      replace:
+        dest: /etc/default/grub
+        regexp: (GRUB_CMDLINE_LINUX=").*(")
+        replace: \1cgroup_enable=memory swapaccount=1\2
+      register: grub_conf
+
+    - name: update grub2 when grub config changed
+      command: update-grub2
+      when: grub_conf.changed
+
+    - name: restart machine if grub config changed
+      command: reboot
+      async: 0
+      poll: 0
+      ignore_errors: true
+      when: grub_conf.changed
+      register: reboot
+
+    - name: wait for machine to come back up
+      local_action: wait_for host={{ inventory_hostname }} state=started
+      become: false
+      when: reboot.changed
+
     ### cAdvisor
-    - name: cAdvisor
-      docker_container:
-        name: cadvisor
-        image: google/cadvisor:latest
-        state: started
-        restart_policy: always
-        volumes:
-          - /var/run:/var/run:rw
-          - /sys:/sys:ro
-          - /var/lib/docker:/var/lib/docker:ro
-        ports:
-          - 8080:8080
+    - name: download cAdvisor
+      get_url:
+        url: https://github.com/google/cadvisor/releases/download/v0.23.2/cadvisor
+        dest: /usr/bin/cadvisor
+        mode: 0755
+
+    - name: install cAdvisor init.d script
+      copy:
+        src: configs/cadvisor.init.d
+        dest: /etc/init.d/cadvisor
+
+    - name: install cAdvisor default parameters
+      copy:
+        src: config/cadvisor.default
+        dest: /etc/default/cadvisor
+
+    - name: install cAdvisor service
+      copy:
+        src: config/cadvisor.service
+        dest: /lib/systemd/system/cadvisor.service
 
     ### clone source
     - name: push source to remote
@@ -99,7 +131,6 @@
       git:
         repo: /opt/git/{{REPO_NAME}}.git/
         dest: /usr/src/{{REPO_NAME}}/
-      register: source
       tags: deploy
 
     ### asterisk
@@ -109,7 +140,6 @@
         path: /usr/src/{{REPO_NAME}}/asterisk
         state: present
         force: yes
-      when: source.changed
       tags: deploy
 
     - name: start Asterisk Docker container
@@ -119,7 +149,6 @@
         state: started
         restart_policy: always
         network_mode: host
-      when: source.changed
       tags: deploy
 
     ### agi
@@ -129,7 +158,6 @@
         path: /usr/src/{{REPO_NAME}}/agi
         state: present
         force: yes
-      when: source.changed
       tags: deploy
 
     - name: start agi Docker container
@@ -141,5 +169,4 @@
         network_mode: host
         env:
           NODE_ENV: production
-      when: source.changed
       tags: deploy

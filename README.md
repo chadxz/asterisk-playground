@@ -1,5 +1,5 @@
 Ansible scripts and Dockerfile for setting up an Asterisk instance on a
-debian/jessie virtual machine.
+ubuntu/xenial virtual machine.
 
 -----
 
@@ -21,7 +21,6 @@ To get the linux box ready for the ansible scripts from a base installation:
 
 - add your public ssh key to the `~/.ssh/authorized_keys` for your user on the
 linux box
-- as root, `apt-get update -yy && apt-get install sudo`
 - as root, enable passwordless sudo by pasting the following into
 `/etc/sudoers` using the `visudo` command:
 
