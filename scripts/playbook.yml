@@ -98,6 +98,17 @@
       become: false
       when: reboot.changed
 
+    ### docker-gc
+    - name: download docker-gc
+      get_url:
+        url: https://raw.githubusercontent.com/spotify/docker-gc/973ffcd67417b6cd18c270d43e9adeeed5b068e4/docker-gc
+        dest: /usr/sbin/docker-gc
+        mode: 0755
+
+    - name: install docker-gc in crontab # hour 8 UTC should be hour 3 CT
+      cron: name=docker-gc minute=0 hour=*/2 job=/usr/sbin/docker-gc
+      become: yes
+
     ### cAdvisor
     - name: download cAdvisor
       get_url:
