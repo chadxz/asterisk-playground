@@ -109,6 +109,7 @@
       copy:
         src: configs/cadvisor.init.d
         dest: /etc/init.d/cadvisor
+        mode: 0755
 
     - name: install cAdvisor default parameters
       copy:
@@ -121,7 +122,7 @@
         dest: /lib/systemd/system/cadvisor.service
 
     - name: start cAdvisor
-      service: name=cadvisor state=started
+      service: name=cadvisor state=started enabled=yes
 
     ### clone source
     - name: push source to remote
