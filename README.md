@@ -20,7 +20,14 @@ and in the `ansible.cfg` file in the `remote_user` variable
 To get the linux box ready for the ansible scripts from a base installation:
 
 - add your public ssh key to the `~/.ssh/authorized_keys` for your user on the
-linux box
+linux box (`ssh-copy-id` command line tool makes this very easy. `brew install
+ssh-copy-id`)
+- install python for ansible:
+
+    ```sh
+    $ sudo apt-get update && sudo apt-get install python
+    ```
+
 - as root, enable passwordless sudo by pasting the following into
 `/etc/sudoers` using the `visudo` command:
 

@@ -21,6 +21,7 @@
       apt: name={{item}} update_cache=yes
       with_items:
         - python-dev
+        - python-setuptools
         - git
 
     - name: easy_install pip
@@ -62,10 +63,10 @@
         repo: deb https://apt.dockerproject.org/repo ubuntu-xenial main
 
     - name: install Docker
-      apt: name=docker-engine update_cache=yes
+      apt: name=docker-engine=1.12* update_cache=yes
 
     - name: start Docker
-      service: name=docker=1.12 state=started
+      service: name=docker state=started
 
     - name: add users to docker group
       user: name={{VM_USER}} groups=docker append=yes
@@ -111,14 +112,17 @@
 
     - name: install cAdvisor default parameters
       copy:
-        src: config/cadvisor.default
+        src: configs/cadvisor.default
         dest: /etc/default/cadvisor
 
     - name: install cAdvisor service
       copy:
-        src: config/cadvisor.service
+        src: configs/cadvisor.service
         dest: /lib/systemd/system/cadvisor.service
 
+    - name: start cAdvisor
+      service: name=cadvisor state=started
+      
     ### clone source
     - name: push source to remote
       become: false
