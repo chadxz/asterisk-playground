@@ -30,6 +30,7 @@ done
 
 # ARI mailbox
 menuselect/menuselect --disable app_voicemail menuselect.makeopts
+menuselect/menuselect --enable res_ari_mailboxes menuselect.makeopts
 menuselect/menuselect --enable res_stasis_mailbox menuselect.makeopts
 
 make -j ${JOBS} all
