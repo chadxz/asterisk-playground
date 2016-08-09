@@ -20,3 +20,5 @@ indent_size = 4
 [*.md]
 indent_size = 4
 
+[.git/COMMIT_EDITMSG]
+max_line_length = 72

@@ -5,27 +5,27 @@ const bformat = require('bunyan-format');
 const config = require('config');
 
 function createLogger() {
-    const { pretty, color, level } = config.log;
+  const { pretty, color, level } = config.log;
 
-    const stream = pretty ?
-        bformat({ color, outputMode: 'short' }) :
-        process.stdout;
+  const stream = pretty ?
+      bformat({ color, outputMode: 'short' }) :
+      process.stdout;
 
-    const useStream = level !== 'silent';
+  const useStream = level !== 'silent';
 
-    return bunyan.createLogger({
-        name,
-        streams: useStream ? [{ level, stream }] : []
-    });
+  return bunyan.createLogger({
+    name,
+    streams: useStream ? [{ level, stream }] : []
+  });
 }
 
 const log = createLogger();
 
 if (config.log.logUncaughtException) {
-    process.on('uncaughtException', err => {
-        log.fatal({ err }, 'Uncaught exception');
-        process.exit(1);
-    });
+  process.on('uncaughtException', err => {
+    log.fatal({ err }, 'Uncaught exception');
+    process.exit(1);
+  });
 }
 
 exports = module.exports = log;

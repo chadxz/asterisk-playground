@@ -1,6 +1,6 @@
 'use strict';
 module.exports = {
-    log: {
-        color: false
-    }
+  log: {
+    color: false
+  }
 };

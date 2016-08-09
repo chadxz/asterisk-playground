@@ -15,6 +15,7 @@
   "author": "Chad McElligott <chad.mcelligott@gmail.com>",
   "license": "UNLICENSED",
   "dependencies": {
+    "ari-client": "^1.0.0",
     "bunyan": "^1.8.1",
     "bunyan-format": "^0.2.1",
     "config": "^1.21.0",
