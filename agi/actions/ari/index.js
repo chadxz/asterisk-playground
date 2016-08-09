@@ -1,3 +1,3 @@
 'use strict';
-
-exports.musicOnHold = require('./musicOnHold');
+const musicOnHold = require('./musicOnHold');
+module.exports = [musicOnHold];

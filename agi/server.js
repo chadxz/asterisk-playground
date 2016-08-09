@@ -23,7 +23,7 @@ AGI.createServer(config.port, connection => {
     agiActions.musicOnHold.execute(connection);
   } else {
     const applicationName = ariActions.musicOnHold.name;
-    agiActions.dropToStasis.execute(connection, applicationName);
+    agiActions.putInStasis.execute(connection, applicationName);
   }
 });
 
