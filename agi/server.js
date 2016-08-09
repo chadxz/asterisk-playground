@@ -19,7 +19,7 @@ AGI.createServer(config.port, connection => {
   const { variables } = connection;
   log.debug({ variables }, 'new AGI connection');
 
-  if (variables.agi_extension === 300) {
+  if (variables.agi_extension === '300') {
     agiActions.musicOnHold.execute(connection);
   } else {
     const applicationName = ariActions[0].name;
