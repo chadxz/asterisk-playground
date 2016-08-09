@@ -15,7 +15,26 @@ function createLogger() {
 
   return bunyan.createLogger({
     name,
-    streams: useStream ? [{ level, stream }] : []
+    streams: useStream ? [{ level, stream }] : [],
+    serializers: {
+      err(err) {
+        if (typeof err === 'string') {
+          return { message: err };
+        }
+
+        const result = bunyan.stdSerializers.err(err);
+        // log any enumerable properties not grabbed by bunyan
+        if (err && typeof err === 'object') {
+          Object.keys(err).forEach(key => {
+            if (key !== 'error@context' && !result[key]) {
+              result[key] = err[key];
+            }
+          });
+        }
+
+        return result;
+      }
+    }
   });
 }
 
