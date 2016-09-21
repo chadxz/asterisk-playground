@@ -29,7 +29,7 @@ RUN apt-get update -qq && \
             && \
     apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/*
 
-ENV ASTERISK_VERSION=13.10.0
+ENV ASTERISK_VERSION=14.0.0-rc1
 COPY build-asterisk.sh /build-asterisk
 RUN /build-asterisk && rm -f /build-asterisk
 COPY conf/ /etc/asterisk/

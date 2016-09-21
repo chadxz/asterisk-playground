@@ -3,7 +3,7 @@
 PROGNAME=$(basename $0)
 
 if test -z ${ASTERISK_VERSION}; then
-    echo "${PROGNAME}: ASTERISK_VERSION requires" >&2
+    echo "${PROGNAME}: ASTERISK_VERSION required" >&2
     exit 1
 fi
 
