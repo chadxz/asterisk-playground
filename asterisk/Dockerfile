@@ -1,12 +1,14 @@
-FROM respoke/pjsip:latest
-MAINTAINER Respoke <info@respoke.io>
+FROM debian:jessie
+MAINTAINER Chad McElligott <chad.mcelligott@gmail.com>
 
 RUN useradd --system asterisk
 
 RUN apt-get update -qq && \
     DEBIAN_FRONTEND=noninteractive \
     apt-get install -y --no-install-recommends \
+            autoconf \
             build-essential \
+            ca-certificates \
             curl \
             libcurl4-openssl-dev \
             libedit-dev \
@@ -15,6 +17,8 @@ RUN apt-get update -qq && \
             libogg-dev \
             libsqlite3-dev \
             libsrtp0-dev \
+            libspeex-dev \
+            libspeexdsp-dev \
             libssl-dev \
             libxml2-dev \
             libxslt1-dev \
@@ -24,12 +28,13 @@ RUN apt-get update -qq && \
             libpopt-dev \
             libspandsp-dev \
             libvorbis-dev \
+            libresample1-dev \
             portaudio19-dev \
             vim \
             && \
     apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/*
 
-ENV ASTERISK_VERSION=14.0.0-rc1
+ENV ASTERISK_VERSION=14.0.0
 COPY build-asterisk.sh /build-asterisk
 RUN /build-asterisk && rm -f /build-asterisk
 COPY conf/ /etc/asterisk/
