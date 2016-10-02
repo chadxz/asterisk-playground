@@ -30,11 +30,12 @@ RUN apt-get update -qq && \
             libvorbis-dev \
             libresample1-dev \
             portaudio19-dev \
+            xmlstarlet \
             vim \
             && \
     apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/*
 
-ENV ASTERISK_VERSION=14.0.0
+ENV ASTERISK_VERSION=14.0.2
 COPY build-asterisk.sh /build-asterisk
 RUN /build-asterisk && rm -f /build-asterisk
 COPY conf/ /etc/asterisk/
