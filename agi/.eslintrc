@@ -15,7 +15,8 @@
     "padded-blocks": [0],
     "arrow-body-style": [0],
     "max-len": [0],
-    "newline-per-chained-call": [0]
+    "newline-per-chained-call": [0],
+    "new-cap": [0] // because of ari-client client.Playback()
   },
   "env": {
     "es6": true,
