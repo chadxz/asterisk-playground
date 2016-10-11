@@ -1,8 +1,8 @@
 {
-  "name": "agi",
+  "name": "call-control",
   "private": true,
   "version": "1.0.0",
-  "description": "agi server for the chadsterisk project",
+  "description": "agi server + ari client for the chadsterisk project",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
