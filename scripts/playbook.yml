@@ -182,19 +182,19 @@
         network_mode: host
       tags: deploy
 
-    ### agi
-    - name: build agi Docker image
+    ### call-control
+    - name: build call-control Docker image
       docker_image:
-        name: agi
-        path: /usr/src/{{REPO_NAME}}/agi
+        name: call-control
+        path: /usr/src/{{REPO_NAME}}/call-control
         state: present
         force: yes
       tags: deploy
 
-    - name: start agi Docker container
+    - name: start call-control Docker container
       docker_container:
-        name: agi
-        image: agi
+        name: call-control
+        image: call-control
         state: started
         restart_policy: always
         network_mode: host
