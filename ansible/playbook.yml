@@ -1,24 +1,33 @@
 ---
-- hosts: all
+- hosts: playground
 
   #-*-* vars *-*-#
   vars:
-    VM_USER: cmcelligott
-    REPO_NAME: chadsterisk
+    PLAYGROUND_USER: "{{ lookup('env', 'USER') }}"
+    VM_ADDRESS: "{{ groups['playground'][0] }}"
+    REPO_NAME: playground
 
   #-*-* tasks *-*-#
   tasks:
+    ### add user
+    - name: useradd {{ PLAYGROUND_USER }}
+      user: name={{ PLAYGROUND_USER }} groups=sudo append=yes shell=/bin/bash
+
+    - name: Ensure public key is in authorized_keys
+      authorized_key:
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+        user: "{{ PLAYGROUND_USER }}"
 
     ### apt
     - name: install apt upgrades
-      apt: name={{item}} update_cache=yes
+      apt: name={{ item }} update_cache=yes
       with_items:
         - apt-transport-https
         - ca-certificates
 
     ### dependencies
     - name: install dev dependencies
-      apt: name={{item}} update_cache=yes
+      apt: name={{ item }} update_cache=yes
       with_items:
         - python-dev
         - python-setuptools
@@ -34,7 +43,7 @@
     - name: create .ssh directory for git user
       file: path=/home/git/.ssh owner=git group=git mode=0700 state=directory
 
-    - name: allow {{VM_USER}} to access git server via ssh
+    - name: allow {{ PLAYGROUND_USER }} to access git server via ssh
       copy:
         src: ~/.ssh/id_rsa.pub
         dest: /home/git/.ssh/authorized_keys
@@ -43,13 +52,13 @@
         group: git
 
     - name: create directory for git repository
-      file: path=/opt/git/{{REPO_NAME}}.git owner=git group=git state=directory
+      file: path=/opt/git/{{ REPO_NAME }}.git owner=git group=git state=directory
 
     - name: create bare git repository
       become_user: git
-      command: git init --bare /opt/git/{{REPO_NAME}}.git
+      command: git init --bare /opt/git/{{ REPO_NAME }}.git
       args:
-        creates: /opt/git/{{REPO_NAME}}.git/HEAD
+        creates: /opt/git/{{ REPO_NAME }}.git/HEAD
         warn: no
 
     ### docker
@@ -69,7 +78,7 @@
       service: name=docker state=started
 
     - name: add users to docker group
-      user: name={{VM_USER}} groups=docker append=yes
+      user: name={{ PLAYGROUND_USER }} groups=docker append=yes
 
     # explicitly specify 1.9.0 to work around ansible issue
     # https://github.com/ansible/ansible/issues/17495
@@ -103,18 +112,17 @@
     ### docker-gc
     - name: download docker-gc
       get_url:
-        url: https://raw.githubusercontent.com/spotify/docker-gc/973ffcd67417b6cd18c270d43e9adeeed5b068e4/docker-gc
+        url: https://raw.githubusercontent.com/spotify/docker-gc/4ee60137cfc76cf568b47f9b459b851d59325311/docker-gc
         dest: /usr/sbin/docker-gc
         mode: 0755
 
     - name: install docker-gc in crontab to run every two hours
       cron: name=docker-gc minute=0 hour=*/2 job=/usr/sbin/docker-gc
-      become: yes
 
     ### cAdvisor
     - name: download cAdvisor
       get_url:
-        url: https://github.com/google/cadvisor/releases/download/v0.23.2/cadvisor
+        url: https://github.com/google/cadvisor/releases/download/v0.24.1/cadvisor
         dest: /usr/bin/cadvisor
         mode: 0755
 
@@ -153,22 +161,22 @@
     ### clone source
     - name: push source to remote
       become: false
-      tags: deploy
       local_action: >
         command warn="no" git push
-          --repo git@{{ ansible_default_ipv4.address }}:/opt/git/{{REPO_NAME}}.git
+          --repo git@{{ VM_ADDRESS }}:/opt/git/{{ REPO_NAME }}.git
+      tags: deploy
 
     - name: pull source into working directory
       git:
-        repo: /opt/git/{{REPO_NAME}}.git/
-        dest: /usr/src/{{REPO_NAME}}/
+        repo: /opt/git/{{ REPO_NAME }}.git/
+        dest: /usr/src/{{ REPO_NAME }}/
       tags: deploy
 
     ### asterisk
     - name: build Asterisk Docker image
       docker_image:
         name: asterisk
-        path: /usr/src/{{REPO_NAME}}/asterisk
+        path: /usr/src/{{ REPO_NAME }}/asterisk
         state: present
         force: yes
       tags: deploy
@@ -186,7 +194,7 @@
     - name: build call-control Docker image
       docker_image:
         name: call-control
-        path: /usr/src/{{REPO_NAME}}/call-control
+        path: /usr/src/{{ REPO_NAME }}/call-control
         state: present
         force: yes
       tags: deploy

@@ -1,9 +1,9 @@
 all:
-	cd scripts && \
+	cd ansible && \
 	ansible-playbook playbook.yml
 .PHONY: all
 
 deploy:
-	cd scripts && \
+	cd ansible && \
 	ansible-playbook --tags deploy playbook.yml
 .PHONY: deploy

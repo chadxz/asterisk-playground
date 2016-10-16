@@ -1,5 +1,7 @@
-Ansible scripts and Dockerfile for setting up an Asterisk instance on a
-ubuntu/xenial virtual machine.
+# asterisk-playground
+
+Vagrant + Ansible scripts for setting up an Asterisk instance on a ubuntu/xenial
+virtual machine. Comes with Dockerized Asterisk and a Node.js AGI + ARI app.
 
 -----
 
@@ -7,31 +9,45 @@ ubuntu/xenial virtual machine.
 
 To get your computer ready to run the ansible scripts:
 
-- Install Ansible
-- Setup your `ansible_vault` password file, which is preconfigured for this
-project to reside at `~/.ansible/asteriskvm_vault`.
-- Put the hostname or ip address of the virtual machine in the `inventory.ini`
-file
-- Put your username at the top of the `playbook.yml` in the `user` variable,
-and in the `ansible.cfg` file in the `remote_user` variable
+- Ensure you have an [ssh key](https://help.github.com/articles/generating-an-ssh-key/)
 
-### VM Setup
+- Ensure you have Python 2.7.x installed. (Installed by default on OSX)
 
-To get the linux box ready for the ansible scripts from a base installation:
+- Ensure you have homebrew installed.
 
-- add your public ssh key to the `~/.ssh/authorized_keys` for your user on the
-linux box (`ssh-copy-id` command line tool makes this very easy. `brew install
-ssh-copy-id`)
-- install python for ansible:
+    ```/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"```
 
-    ```sh
-    $ sudo apt-get update && sudo apt-get install python
-    ```
+- Install Python pip package manager.
 
-- as root, enable passwordless sudo by pasting the following into
-`/etc/sudoers` using the `visudo` command:
+    ```easy_install pip```
 
-    ```
-    ALL            ALL = (ALL) NOPASSWD: ALL
-    ```
+- Use pip to install Ansible.
+
+    ```pip install ansible```
+
+- Install virtualbox and vagrant.
+
+    ```brew cask install virtualbox vagrant```
+
+- Start the virtual machine with `vagrant up`
+
+### Deploying the system
+
+To setup the vm from scratch:
+
+```
+$ make
+```
+
+Once deployed to, you can ssh into it:
+
+```
+$ ssh 192.168.68.68
+```
+
+To upgrade the asterisk box or agi+ari application:
+
+```
+$ make deploy
+```
 
