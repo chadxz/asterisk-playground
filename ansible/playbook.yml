@@ -115,6 +115,7 @@
         url: https://raw.githubusercontent.com/spotify/docker-gc/4ee60137cfc76cf568b47f9b459b851d59325311/docker-gc
         dest: /usr/sbin/docker-gc
         mode: 0755
+        checksum: sha1:51847f2feadf2268ec3b66ed4a26e738db0815aa
 
     - name: install docker-gc in crontab to run every two hours
       cron: name=docker-gc minute=0 hour=*/2 job=/usr/sbin/docker-gc
@@ -125,17 +126,21 @@
         url: https://github.com/google/cadvisor/releases/download/v0.24.1/cadvisor
         dest: /usr/bin/cadvisor
         mode: 0755
+        checksum: sha1:0cb5704ef3d37f1175c8a34aa69e3ae4416b032b
+      notify: restart cAdvisor
 
     - name: install cAdvisor init.d script
       copy:
         src: configs/cadvisor.init.d
         dest: /etc/init.d/cadvisor
         mode: 0755
+      notify: restart cAdvisor
 
     - name: install cAdvisor default parameters
       copy:
         src: configs/cadvisor.default
         dest: /etc/default/cadvisor
+      notify: restart cAdvisor
 
     - name: install cAdvisor service
       copy:
@@ -209,3 +214,7 @@
         env:
           NODE_ENV: production
       tags: deploy
+
+  handlers:
+    - name: restart cAdvisor
+      service: name=cadvisor state=restarted
