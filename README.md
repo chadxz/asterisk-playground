@@ -60,7 +60,7 @@ containers. Access this at
 [http://192.168.68.68:4194/containers/](http://192.168.68.68:4194/containers/)
 
 - Asterisk will be running. Point a sip client at 192.168.68.68 using the
-credentials from [asterisk/conf/extensions.conf](asterisk/conf/extensions.conf).
+credentials from [asterisk/conf/pjsip.conf](asterisk/conf/pjsip.conf).
 
 - The 'call-control' node app will be running, but it only interacts with Asterisk
 and exposes no public facing ui.
