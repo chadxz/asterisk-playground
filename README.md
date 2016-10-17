@@ -5,7 +5,7 @@ virtual machine. Comes with Dockerized Asterisk and a Node.js AGI + ARI app.
 
 -----
 
-### Local Setup
+### pre-reqs
 
 To get your computer ready to run the ansible scripts:
 
@@ -31,7 +31,7 @@ To get your computer ready to run the ansible scripts:
 
 - Start the virtual machine with `vagrant up`
 
-### Deploying the system
+### deploying the system
 
 To setup the vm from scratch:
 
@@ -51,3 +51,21 @@ To upgrade the asterisk box or agi+ari application:
 $ make deploy
 ```
 
+### accessing the system
+
+Once deployed, a few services will be available on the vm:
+
+- cAdvisor will be running, providing monitoring for the system and
+containers. Access this at
+[http://192.168.68.68:4194/containers/](http://192.168.68.68:4194/containers/)
+
+- Asterisk will be running. Point a sip client at 192.168.68.68 using the
+credentials from [asterisk/conf/extensions.conf](asterisk/conf/extensions.conf).
+
+- The 'call-control' node app will be running, but it only interacts with Asterisk
+and exposes no public facing ui.
+
+- To view logs of any application, ssh into the box with `vagrant ssh playground`
+and use `docker ps` to view the container statuses and `docker logs <container name>`
+to view logs of any individual container. For Asterisk, you can access the console
+using the command `docker exec -ti --rm asterisk asterisk -c`
