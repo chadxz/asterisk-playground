@@ -8,8 +8,8 @@ module.exports = {
     color: true
   },
   ari: {
-    baseUrl: 'http://localhost:8088',
-    user: 'asterisk',
+    host: 'localhost:8088',
+    username: 'asterisk',
     password: 'asterisk'
   }
 };

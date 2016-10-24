@@ -2,7 +2,7 @@
 const config = require('config');
 const log = require('./log');
 const AGI = require('./vendor/digium-agi');
-const ARI = require('ari-client');
+const ari = require('./ari');
 const ariActions = require('./actions/ari');
 const agiActions = require('./actions/agi');
 
@@ -27,29 +27,28 @@ AGI.createServer(config.port, connection => {
   }
 });
 
-const { baseUrl, user, password } = config.ari;
+const startEvents = ari.events
+  .map(event => JSON.parse(event))
+  .filter(event => event.type === 'StasisStart');
 
-ARI.connect(baseUrl, user, password).then(ari => {
-  const applications = ariActions.map(action => action.name);
+startEvents.subscribe(event => {
+  log.debug({ event }, 'Received StasisStart event');
 
-  return ari.start(applications).then(() => {
-    ari.on('StasisStart', (event, channel) => {
-      const action = ariActions.find(action => {
-        return action.name === event.application;
-      });
-
-      if (!action) {
-        log.warn({ event }, 'No matching action for StasisStart event');
-        return;
-      }
-
-      action.execute({ ari, event, channel }).catch(err => {
-        log.error({ err }, 'ARI action encountered an error');
-      });
-    });
+  const action = ariActions.find(action => {
+    return action.name === event.application;
   });
-}).catch(err => {
-  log.fatal({ err }, 'ARI encountered an error');
+
+  if (!action) {
+    log.warn({ event }, 'No matching action for StasisStart event');
+    return;
+  }
+
+  log.debug({ action }, 'Found corresponding action. executing...');
+  action.execute({ ari, event }).catch(err => {
+    log.error({ err }, 'ARI action encountered an error');
+  });
+}, err => {
+  log.fatal({ err }, 'ARI subscription encountered an error');
   process.nextTick(() => { throw err; });
 });
 

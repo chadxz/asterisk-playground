@@ -9,13 +9,13 @@
     "lint": "eslint ."
   },
   "engines": {
-    "node": "^6.2.2",
-    "npm": "^3.9.5"
+    "node": "^6.9.1",
+    "npm": "^3.10.9"
   },
   "author": "Chad McElligott <chad.mcelligott@gmail.com>",
   "license": "UNLICENSED",
   "dependencies": {
-    "ari-client": "^1.0.0",
+    "awry": "^0.1.2",
     "bunyan": "^1.8.1",
     "bunyan-format": "^0.2.1",
     "config": "^1.21.0",
@@ -23,6 +23,7 @@
     "eslint": "^3.1.1",
     "eslint-config-airbnb-base": "^5.0.0",
     "eslint-plugin-import": "^1.12.0",
-    "readable-stream": "^2.1.4"
+    "readable-stream": "^2.1.4",
+    "rxjs": "^5.0.0-rc.1"
   }
 }
