@@ -191,6 +191,7 @@
         name: asterisk
         image: asterisk
         state: started
+        restart: yes
         restart_policy: always
         network_mode: host
       tags: deploy
@@ -209,6 +210,7 @@
         name: call-control
         image: call-control
         state: started
+        restart: yes
         restart_policy: always
         network_mode: host
         env:
