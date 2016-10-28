@@ -27,11 +27,9 @@ AGI.createServer(config.port, connection => {
   }
 });
 
-const startEvents = ari.events
-  .map(event => JSON.parse(event))
-  .filter(event => event.type === 'StasisStart');
-
-startEvents.subscribe(event => {
+ari.events.filter(event => {
+  return event.type === 'StasisStart';
+}).subscribe(event => {
   log.debug({ event }, 'Received StasisStart event');
 
   const action = ariActions.find(action => {

@@ -14,7 +14,7 @@ module.exports = {
    * @param {object} params
    * @param {object} params.ari The ari library
    * @param {object} params.event The stasis start event
-   * @param {string} params.event.channelId The id of the incoming channel
+   * @param {string} params.event.channel.id The id of the incoming channel
    * @returns {Promise}
    **/
   execute(params) {

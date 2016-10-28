@@ -15,7 +15,7 @@
   "author": "Chad McElligott <chad.mcelligott@gmail.com>",
   "license": "UNLICENSED",
   "dependencies": {
-    "awry": "^0.1.3",
+    "awry": "^0.2.0",
     "bunyan": "^1.8.1",
     "bunyan-format": "^0.2.1",
     "config": "^1.21.0",
