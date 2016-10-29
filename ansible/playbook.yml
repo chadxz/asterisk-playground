@@ -154,7 +154,7 @@
     - name: push source to remote
       become: false
       local_action: >
-        command warn="no" git push
+        command warn="no" git push --force
           --repo git@{{ VM_ADDRESS }}:/opt/git/{{ REPO_NAME }}.git
       tags: deploy
 
