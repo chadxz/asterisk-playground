@@ -150,19 +150,6 @@
     - name: start cAdvisor
       service: name=cadvisor state=started enabled=yes
 
-    ### swagger-ui
-    - name: start swagger-ui Docker container
-      docker_container:
-        name: swagger-ui
-        image: schickling/swagger-ui
-        state: started
-        restart_policy: always
-        ports:
-          - 80:80
-        env:
-          API_URL: http://{{ inventory_hostname }}:8088/ari/api-docs/resources.json
-          API_KEY: asterisk:asterisk
-
     ### clone source
     - name: push source to remote
       become: false
@@ -194,6 +181,30 @@
         restart: yes
         restart_policy: always
         network_mode: host
+      tags: deploy
+
+    ### swagger-ui
+    - name: build swagger-ui Docker image
+      docker_image:
+        name: swagger-ui
+        path: /usr/src/{{ REPO_NAME }}/swagger-ui
+        state: present
+        force: yes
+      tags: deploy
+
+    - name: start swagger-ui Docker container
+      docker_container:
+        name: swagger-ui
+        image: swagger-ui
+        state: started
+        restart: yes
+        restart_policy: always
+        ports:
+          - 8080:8080
+        env:
+          SWAGGER_URL: http://{{ inventory_hostname }}:8088/ari/api-docs/resources.json
+          ARI_USERNAME: asterisk
+          ARI_PASSWORD: asterisk
       tags: deploy
 
     ### call-control
