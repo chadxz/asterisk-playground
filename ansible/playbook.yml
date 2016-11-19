@@ -111,6 +111,7 @@
 
     ### docker-gc
     - name: download docker-gc
+      tags: docker-gc
       get_url:
         url: https://raw.githubusercontent.com/spotify/docker-gc/4ee60137cfc76cf568b47f9b459b851d59325311/docker-gc
         dest: /usr/sbin/docker-gc
@@ -118,7 +119,33 @@
         checksum: sha1:51847f2feadf2268ec3b66ed4a26e738db0815aa
 
     - name: install docker-gc in crontab to run every two hours
-      cron: name=docker-gc minute=0 hour=*/2 job=/usr/sbin/docker-gc
+      tags: docker-gc
+      cron:
+        name: docker-gc
+        minute: 0
+        hour: '*/2'
+        job: /usr/sbin/docker-gc
+        cron_file: docker-gc
+        user: root
+
+    - name: set docker-gc cron to force image removal
+      tags: docker-gc
+      cron:
+        env: yes
+        name: FORCE_IMAGE_REMOVAL
+        value: 1
+        cron_file: docker-gc
+        user: root
+
+    - name: set docker-gc cron to force container removal
+      tags: docker-gc
+      cron:
+        env: yes
+        name: FORCE_CONTAINER_REMOVAL
+        value: 1
+        cron_file: docker-gc
+        user: root
+
 
     ### cAdvisor
     - name: download cAdvisor
