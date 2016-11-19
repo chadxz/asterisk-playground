@@ -1,7 +1,7 @@
 FROM node:6
 
-RUN addgroup --gid 200 node && \
-    adduser --system --home /home/node --uid 200 --gid 200 node && \
+RUN mkdir /home/node && \
+    chown node.node /home/node && \
     mkdir -p /usr/src/app && \
     chown -R node:node /usr/src/app && \
     wget -O /usr/local/bin/dumb-init \
@@ -18,5 +18,5 @@ COPY . /usr/src/app
 
 EXPOSE 4573
 
-ENTRYPOINT [ "/usr/local/bin/dumb-init", "--"]
+ENTRYPOINT [ "/usr/local/bin/dumb-init", "--" ]
 CMD [ "node", "server.js" ]
