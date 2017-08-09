@@ -71,4 +71,4 @@ and exposes no public facing ui.
 - To view logs of any application, ssh into the box with `vagrant ssh playground`
 and use `docker ps` to view the container statuses and `docker logs <container name>`
 to view logs of any individual container. For Asterisk, you can access the console
-using the command `docker exec -ti --rm asterisk asterisk -c`
+using the command `docker exec -ti asterisk asterisk -c`
