@@ -1,11 +1,9 @@
 FROM node:6
 
-RUN mkdir /home/node && \
-    chown node.node /home/node && \
-    mkdir -p /usr/src/app && \
+RUN mkdir -p /usr/src/app && \
     chown -R node:node /usr/src/app && \
     wget -O /usr/local/bin/dumb-init \
-      https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64 && \
+      https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 && \
     chmod +x /usr/local/bin/dumb-init
 
 USER node
