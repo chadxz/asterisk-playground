@@ -197,7 +197,7 @@
         restart: yes
         restart_policy: always
         ports:
-          - 8080:8080
+          - 1337:8080
         env:
           SWAGGER_URL: http://{{ inventory_hostname }}:8088/ari/api-docs/resources.json
           ARI_USERNAME: asterisk

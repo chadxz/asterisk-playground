@@ -1,6 +1,6 @@
-FROM alpine:3.4
+FROM alpine:3.6
 
-ENV NGINX_VERSION=1.10.1-r1
+ENV NGINX_VERSION=1.12.2-r0
 ENV SWAGGER_UI_VERSION=2.2.6
 
 RUN apk add --update nginx=${NGINX_VERSION} tar curl py-pip && \
