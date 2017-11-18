@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM debian:stretch
 MAINTAINER Chad McElligott <chad.mcelligott@gmail.com>
 
 RUN useradd --system asterisk
