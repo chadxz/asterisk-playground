@@ -132,34 +132,20 @@
       copy: src=configs/logrotate.conf dest=/etc/logrotate.d/docker-gc.conf
 
     ### cAdvisor
-    - name: download cAdvisor
-      get_url:
-        url: https://github.com/google/cadvisor/releases/download/v0.24.1/cadvisor
-        dest: /usr/bin/cadvisor
-        mode: 0755
-        checksum: sha1:0cb5704ef3d37f1175c8a34aa69e3ae4416b032b
-      notify: restart cAdvisor
-
-    - name: install cAdvisor init.d script
-      copy:
-        src: configs/cadvisor.init.d
-        dest: /etc/init.d/cadvisor
-        mode: 0755
-      notify: restart cAdvisor
-
-    - name: install cAdvisor default parameters
-      copy:
-        src: configs/cadvisor.default
-        dest: /etc/default/cadvisor
-      notify: restart cAdvisor
-
-    - name: install cAdvisor service
-      copy:
-        src: configs/cadvisor.service
-        dest: /lib/systemd/system/cadvisor.service
-
-    - name: start cAdvisor
-      service: name=cadvisor state=started enabled=yes
+    - name: launch cadvisor container
+      docker_container:
+        name: cadvisor
+        image: google/cadvisor:latest
+        restart_policy: always
+        state: started
+        memory: '256MB'
+        ports:
+          - "80:8080"
+        volumes:
+          - /:/rootfs:ro
+          - /var/run:/var/run:rw
+          - /sys:/sys:ro
+          - /var/lib/docker/:/var/lib/docker:ro
 
     ### clone source
     - name: push source to remote
