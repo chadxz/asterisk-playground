@@ -113,10 +113,10 @@
     - name: download docker-gc
       tags: docker-gc
       get_url:
-        url: https://raw.githubusercontent.com/spotify/docker-gc/4ee60137cfc76cf568b47f9b459b851d59325311/docker-gc
-        dest: /usr/sbin/docker-gc
+        url: https://raw.githubusercontent.com/spotify/docker-gc/71d2a57d062902595834e2918a008cebedaff18f/docker-gc
+        dest: /usr/local/sbin/docker-gc
         mode: 0755
-        checksum: sha1:51847f2feadf2268ec3b66ed4a26e738db0815aa
+        checksum: sha256:98ea7fa6630aa2e31d5da58033b07cf09cdbd94b0847c167631e346c1fbc2586
 
     - name: install docker-gc in crontab to run every two hours
       tags: docker-gc
@@ -124,28 +124,12 @@
         name: docker-gc
         minute: 0
         hour: '*/2'
-        job: /usr/sbin/docker-gc
-        cron_file: docker-gc
+        job: GRACE_PERIOD_SECONDS=7200 FORCE_IMAGE_REMOVAL=1 FORCE_CONTAINER_REMOVAL=1 /usr/local/sbin/docker-gc >> /var/log/docker-gc.log
         user: root
 
-    - name: set docker-gc cron to force image removal
+    - name: setup docker-gc logrotation
       tags: docker-gc
-      cron:
-        env: yes
-        name: FORCE_IMAGE_REMOVAL
-        value: 1
-        cron_file: docker-gc
-        user: root
-
-    - name: set docker-gc cron to force container removal
-      tags: docker-gc
-      cron:
-        env: yes
-        name: FORCE_CONTAINER_REMOVAL
-        value: 1
-        cron_file: docker-gc
-        user: root
-
+      copy: src=configs/logrotate.conf dest=/etc/logrotate.d/docker-gc.conf
 
     ### cAdvisor
     - name: download cAdvisor
