@@ -13,6 +13,9 @@
     - name: useradd {{ PLAYGROUND_USER }}
       user: name={{ PLAYGROUND_USER }} groups=sudo append=yes shell=/bin/bash
 
+    - name: usermod -a -G docker ubuntu
+      user: name=ubuntu groups=docker append=yes
+
     - name: Make sudo not require a password
       lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
 
@@ -22,10 +25,15 @@
         user: "{{ PLAYGROUND_USER }}"
 
     #
-    # Install packages so apt works with https repositories
+    # Apt
     #
-    - name: install apt upgrades
-      apt: name={{ item }} update_cache=yes
+    - name: apt-get update
+      apt: update_cache=yes
+      # apt cache updates actually aren't all that meaningful, so ignore them in terms of change reporting
+      changed_when: false
+
+    - name: apt-get install apt https support
+      apt: name={{ item }}
       with_items:
         - apt-transport-https
         - ca-certificates
@@ -34,11 +42,28 @@
     # Required system dependencies for this playbook
     #
     - name: install dev dependencies
-      apt: name={{ item }} update_cache=yes
+      apt: name={{ item }}
       with_items:
         - python-dev
         - python-setuptools
         - git
+
+    - name: Read uname
+      command: uname -r
+      register: uname_output
+      changed_when: False
+
+    - name: apt-get install linux-image-extra-*
+      apt: name={{ item }}
+      register: image_extras
+      with_items:
+        - linux-image-extra-{{ uname_output.stdout }}
+        - linux-image-extra-virtual
+
+    - name: set reboot requested after installing linux-image-extra-*
+      set_fact:
+        reboot_requested: True
+      when: image_extras.changed
 
     - name: easy_install pip
       easy_install: name=pip
@@ -121,18 +146,10 @@
       command: update-grub2
       when: grub_conf.changed
 
-    - name: restart machine if grub config changed
-      command: sleep 2 && reboot
-      async: 1
-      poll: 0
-      ignore_errors: true
+    - name: set reboot requested if grub config changed
+      set_fact:
+        reboot_requested: True
       when: grub_conf.changed
-      register: reboot
-
-    - name: wait for machine to come back up
-      local_action: wait_for host={{ inventory_hostname }} state=started
-      become: false
-      when: reboot.changed
 
     #
     # Setup docker-gc
@@ -175,6 +192,35 @@
           - /var/run:/var/run:rw
           - /sys:/sys:ro
           - /var/lib/docker/:/var/lib/docker:ro
+
+    #
+    # Reboot if needed
+    #
+    - name: Look for reasons to reboot
+      shell: "test -e /var/run/reboot-required || grep -q '/lib[0-9]*/.* (deleted)$' /proc/*/maps && echo REBOOT"
+      register: reboot_required
+      failed_when: False
+      changed_when: reboot_requested is defined or reboot_required.stdout == 'REBOOT'
+
+    # Reboot; see https://support.ansible.com/hc/en-us/articles/201958037-Reboot-a-server-and-wait-for-it-to-come-back
+    # esp. the comments
+    - name: reboot
+      # sleep gives async task time to kick off
+      shell: 'sleep 2 && shutdown -r now "ansible: reboot-required detected; restarting"'
+      async: 5
+      # poll 0 means "fire and forget"
+      poll: 0
+      register: reboot
+      when: not reboot_required|skipped() and reboot_required.changed
+
+    - name: wait for restart
+      local_action: wait_for
+        host={{ inventory_hostname }}
+        port=22
+        delay=15
+        timeout=300
+      become: no
+      when: not reboot|skipped
 
     #
     # Clone applications
