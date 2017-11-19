@@ -88,10 +88,8 @@
     - name: add users to docker group
       user: name={{ PLAYGROUND_USER }} groups=docker append=yes
 
-    # explicitly specify 1.9.0 to work around ansible issue
-    # https://github.com/ansible/ansible/issues/17495
     - name: install Docker python modules for Ansible
-      pip: name=docker-py version=1.9.0
+      pip: name=docker-py version=1.10.6
 
     - name: enable memory cgroup and swap accounting for Docker
       replace:
