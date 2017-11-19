@@ -131,7 +131,9 @@
       become: false
       when: reboot.changed
 
-    ### docker-gc
+    #
+    # Setup docker-gc
+    #
     - name: download docker-gc
       tags: docker-gc
       get_url:
@@ -153,7 +155,9 @@
       tags: docker-gc
       copy: src=configs/logrotate.conf dest=/etc/logrotate.d/docker-gc.conf
 
-    ### cAdvisor
+    #
+    # Setup cAdvisor
+    #
     - name: launch cadvisor container
       docker_container:
         name: cadvisor
@@ -169,7 +173,9 @@
           - /sys:/sys:ro
           - /var/lib/docker/:/var/lib/docker:ro
 
-    ### clone source
+    #
+    # Clone applications
+    #
     - name: push source to remote
       become: false
       local_action: >
@@ -183,7 +189,9 @@
         dest: /usr/src/{{ REPO_NAME }}/
       tags: deploy
 
-    ### asterisk
+    #
+    # Setup Asterisk
+    #
     - name: build Asterisk Docker image
       docker_image:
         name: asterisk
@@ -202,7 +210,10 @@
         network_mode: host
       tags: deploy
 
-    ### swagger-ui
+
+    #
+    # Setup swagger-ui
+    #
     - name: build swagger-ui Docker image
       docker_image:
         name: swagger-ui
@@ -226,7 +237,9 @@
           ARI_PASSWORD: asterisk
       tags: deploy
 
-    ### call-control
+    #
+    # Setup call-control
+    #
     - name: build call-control Docker image
       docker_image:
         name: call-control
