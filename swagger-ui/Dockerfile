@@ -32,3 +32,4 @@ ADD swagger-ui-entrypoint.sh /
 EXPOSE 8080
 
 ENTRYPOINT ["./swagger-ui-entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]
