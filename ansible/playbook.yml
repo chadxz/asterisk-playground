@@ -68,6 +68,18 @@
         warn: no
 
     #
+    # Setup journald
+    #
+    - name: mkdir -p /etc/systemd/journald.conf.d
+      file: path=/etc/systemd/journald.conf.d state=directory mode=0755
+
+    - name: Configure journald to persist logs to disk
+      copy:
+        src: custom.conf
+        dest: /etc/systemd/journald.conf.d/
+      notify: restart journald
+
+    #
     # Setup Docker
     #
     - name: install Docker apt-key
@@ -90,6 +102,10 @@
 
     - name: install Docker python modules for Ansible
       pip: name=docker-py version=1.10.6
+
+    - name: Create Docker daemon.json configuration file
+      copy: src=daemon.json dest=/etc/docker/daemon.json
+      notify: restart docker
 
     - name: enable memory cgroup and swap accounting for Docker
       replace:
@@ -234,3 +250,9 @@
   handlers:
     - name: restart cAdvisor
       service: name=cadvisor state=restarted
+
+    - name: restart Docker
+      service: name=docker state=restarted
+
+    - name: restart journald
+      service: name=systemd-journald state=restarted
