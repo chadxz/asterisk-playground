@@ -22,7 +22,7 @@
         user: "{{ PLAYGROUND_USER }}"
 
     #
-    # Apt
+    # Install packages so apt works with https repositories
     #
     - name: install apt upgrades
       apt: name={{ item }} update_cache=yes
@@ -95,7 +95,7 @@
         repo: deb https://apt.dockerproject.org/repo ubuntu-xenial main
 
     - name: install Docker
-      apt: name=docker-engine=1.12* update_cache=yes
+      apt: name=docker-engine=1.12*
 
     - name: start Docker
       service: name=docker state=started
