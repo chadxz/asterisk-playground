@@ -1,15 +1,15 @@
 ---
 - hosts: playground
 
-  #-*-* vars *-*-#
   vars:
     PLAYGROUND_USER: "{{ lookup('env', 'USER') }}"
     VM_ADDRESS: "{{ groups['playground'][0] }}"
     REPO_NAME: playground
 
-  #-*-* tasks *-*-#
   tasks:
-    ### add user
+    #
+    # Add user
+    #
     - name: useradd {{ PLAYGROUND_USER }}
       user: name={{ PLAYGROUND_USER }} groups=sudo append=yes shell=/bin/bash
 
@@ -18,14 +18,18 @@
         key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
         user: "{{ PLAYGROUND_USER }}"
 
-    ### apt
+    #
+    # Apt
+    #
     - name: install apt upgrades
       apt: name={{ item }} update_cache=yes
       with_items:
         - apt-transport-https
         - ca-certificates
 
-    ### dependencies
+    #
+    # Required system dependencies for this playbook
+    #
     - name: install dev dependencies
       apt: name={{ item }} update_cache=yes
       with_items:
@@ -36,7 +40,9 @@
     - name: easy_install pip
       easy_install: name=pip
 
-    ## setup git server
+    #
+    # Setup Git server
+    #
     - name: add git user
       user: name=git
 
@@ -61,7 +67,9 @@
         creates: /opt/git/{{ REPO_NAME }}.git/HEAD
         warn: no
 
-    ### docker
+    #
+    # Setup Docker
+    #
     - name: install Docker apt-key
       apt_key:
         id: 58118E89F3A912897C070ADBF76221572C52609D
@@ -140,7 +148,7 @@
         state: started
         memory: '256MB'
         published_ports:
-          - "8080:8080"
+          - 8080:8080
         volumes:
           - /:/rootfs:ro
           - /var/run:/var/run:rw
