@@ -264,7 +264,7 @@
     - name: restart cAdvisor
       service: name=cadvisor state=restarted
 
-    - name: restart Docker
+    - name: restart docker
       service: name=docker state=restarted
 
     - name: restart journald
