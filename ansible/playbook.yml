@@ -13,6 +13,9 @@
     - name: useradd {{ PLAYGROUND_USER }}
       user: name={{ PLAYGROUND_USER }} groups=sudo append=yes shell=/bin/bash
 
+    - name: Make sudo not require a password
+      lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
+
     - name: Ensure public key is in authorized_keys
       authorized_key:
         key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
