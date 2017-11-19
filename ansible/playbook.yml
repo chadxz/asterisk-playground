@@ -75,7 +75,7 @@
 
     - name: Configure journald to persist logs to disk
       copy:
-        src: custom.conf
+        src: configs/custom.conf
         dest: /etc/systemd/journald.conf.d/
       notify: restart journald
 
@@ -104,7 +104,7 @@
       pip: name=docker-py version=1.10.6
 
     - name: Create Docker daemon.json configuration file
-      copy: src=daemon.json dest=/etc/docker/daemon.json
+      copy: src=configs/daemon.json dest=/etc/docker/daemon.json
       notify: restart docker
 
     - name: enable memory cgroup and swap accounting for Docker
