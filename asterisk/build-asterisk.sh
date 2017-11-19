@@ -37,7 +37,7 @@ curl -vsL https://github.com/asterisk/asterisk/archive/${ASTERISK_VERSION}.tar.g
 # 1.5 jobs per core works out okay
 : ${JOBS:=$(( $(nproc) + $(nproc) / 2 ))}
 
-./configure --with-resample --with-pjproject-bundled
+./configure --with-resample
 make menuselect/menuselect menuselect-tree menuselect.makeopts
 
 for i in "${MENUSELECT_DISABLE[@]}"; do
