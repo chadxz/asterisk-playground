@@ -3,9 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "description": "agi server + ari client for the chadsterisk project",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node src/server.js",
     "lint": "eslint ."
   },
   "engines": {

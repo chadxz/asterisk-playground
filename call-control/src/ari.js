@@ -3,6 +3,7 @@ const awry = require('awry');
 const Rx = require('rxjs/Rx');
 const config = require('config');
 const ariActions = require('./actions/ari');
+
 const { host, username, password } = config.ari;
 const restApiUrl = `http://${host}/ari`;
 const eventsUrl = `ws://${host}/ari/events`;

@@ -1,6 +1,6 @@
 'use strict';
 const bunyan = require('bunyan');
-const name = require('./package.json').name;
+const name = require('../package.json').name;
 const bformat = require('bunyan-format');
 const config = require('config');
 
