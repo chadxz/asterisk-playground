@@ -13,7 +13,7 @@
     "npm": "^3.10.9"
   },
   "author": "Chad McElligott <chad.mcelligott@gmail.com>",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "dependencies": {
     "awry": "^0.2.0",
     "bunyan": "^1.8.1",
