@@ -17,4 +17,4 @@ COPY . /usr/src/app
 EXPOSE 4573
 
 ENTRYPOINT [ "/usr/local/bin/dumb-init", "--" ]
-CMD [ "node", "server.js" ]
+CMD [ "node", "src/server.js" ]
