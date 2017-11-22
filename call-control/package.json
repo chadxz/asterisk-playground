@@ -15,7 +15,7 @@
   "author": "Chad McElligott <chad.mcelligott@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "awry": "^0.2.0",
+    "awry": "chadxz/awry#es-modules",
     "bunyan": "^1.8.1",
     "bunyan-format": "^0.2.1",
     "config": "^1.21.0",
