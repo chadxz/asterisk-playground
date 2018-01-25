@@ -13,9 +13,6 @@
     - name: useradd {{ PLAYGROUND_USER }}
       user: name={{ PLAYGROUND_USER }} groups=sudo append=yes shell=/bin/bash
 
-    - name: usermod -a -G docker ubuntu
-      user: name=ubuntu groups=docker append=yes
-
     - name: Make sudo not require a password
       lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
 
@@ -47,11 +44,16 @@
         - python-dev
         - python-setuptools
         - git
+        - unattended-upgrades
 
     - name: Read uname
       command: uname -r
       register: uname_output
       changed_when: False
+
+    - name: apply security upgrades
+      command: unattended-upgrades --verbose
+      register: security_upgrades
 
     - name: apt-get install linux-image-extra-*
       apt: name={{ item }}
@@ -63,7 +65,7 @@
     - name: set reboot requested after installing linux-image-extra-*
       set_fact:
         reboot_requested: True
-      when: image_extras.changed
+      when: image_extras.changed or security_upgrades.changed
 
     - name: easy_install pip
       easy_install: name=pip
@@ -126,7 +128,10 @@
       service: name=docker state=started
 
     - name: add users to docker group
-      user: name={{ PLAYGROUND_USER }} groups=docker append=yes
+      user: name={{ item }} groups=docker append=yes
+      with_items:
+        - '{{ PLAYGROUND_USER }}'
+        - vagrant
 
     - name: install Docker python modules for Ansible
       pip: name=docker-py version=1.10.6
@@ -181,7 +186,7 @@
     - name: launch cadvisor container
       docker_container:
         name: cadvisor
-        image: google/cadvisor:v0.28.0
+        image: google/cadvisor:v0.28.3
         restart_policy: always
         state: started
         memory: '256MB'

@@ -25,15 +25,6 @@ Vagrant.configure("2") do |config|
         DEBIAN_FRONTEND=noninteractive \
           apt-get update && apt-get install -y python
 
-        # xenial is missing the default vagrant user
-        # See https://bugs.launchpad.net/cloud-images/+bug/1569237
-        echo "vagrant ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vagrant
-        chmod 0400 /etc/sudoers.d/vagrant
-        groupadd vagrant
-        useradd -m -s /bin/bash -g vagrant vagrant
-        install -m 0700 -o vagrant -g vagrant -d /home/vagrant/.ssh
-        install -m 0600 -o vagrant -g vagrant /dev/null /home/vagrant/.ssh/authorized_keys
-
         # Setup ssh permissions for vagrant user
         echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
       SHELL
