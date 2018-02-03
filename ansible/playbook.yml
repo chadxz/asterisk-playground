@@ -34,6 +34,7 @@
       with_items:
         - apt-transport-https
         - ca-certificates
+        - software-properties-common
 
     #
     # Required system dependencies for this playbook
@@ -53,7 +54,6 @@
 
     - name: apply security upgrades
       command: unattended-upgrades --verbose
-      register: security_upgrades
 
     - name: apt-get install linux-image-extra-*
       apt: name={{ item }}
@@ -65,7 +65,7 @@
     - name: set reboot requested after installing linux-image-extra-*
       set_fact:
         reboot_requested: True
-      when: image_extras.changed or security_upgrades.changed
+      when: image_extras.changed
 
     - name: easy_install pip
       easy_install: name=pip
@@ -112,17 +112,20 @@
     #
     # Setup Docker
     #
-    - name: install Docker apt-key
+    - name: apt-key install docker key
       apt_key:
-        id: 58118E89F3A912897C070ADBF76221572C52609D
-        keyserver: hkp://p80.pool.sks-keyservers.net:80
+        id: 8D81803C0EBFCD88
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
 
-    - name: install Docker apt repo
+    - name: apt-add-repo https://download.docker.com/linux/ubuntu
       apt_repository:
-        repo: deb https://apt.dockerproject.org/repo ubuntu-xenial main
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+        state: present
+        filename: docker
 
     - name: install Docker
-      apt: name=docker-engine=1.12*
+      apt: name=docker-ce=17.12.0~ce-0~ubuntu
 
     - name: start Docker
       service: name=docker state=started
@@ -134,7 +137,7 @@
         - vagrant
 
     - name: install Docker python modules for Ansible
-      pip: name=docker-py version=1.10.6
+      pip: name=docker version=2.7.0
 
     - name: Create Docker daemon.json configuration file
       copy: src=configs/daemon.json dest=/etc/docker/daemon.json
@@ -189,7 +192,7 @@
         image: google/cadvisor:v0.28.3
         restart_policy: always
         state: started
-        memory: '256MB'
+        memory: 256MB
         published_ports:
           - 8080:8080
         volumes:
