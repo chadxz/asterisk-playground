@@ -1,9 +1,9 @@
 all:
 	cd ansible && \
-	ansible-playbook playbook.yml
+	ansible-playbook -v --diff playbook.yml
 .PHONY: all
 
 deploy:
 	cd ansible && \
-	ansible-playbook --tags deploy playbook.yml
+	ansible-playbook -v --diff --tags deploy playbook.yml
 .PHONY: deploy
