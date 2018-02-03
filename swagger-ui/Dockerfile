@@ -21,7 +21,7 @@ RUN mkdir -p /usr/src/swagger-ui && \
       tar --strip-components 1 -xz && \
     cp -rf dist/* /usr/share/nginx/html
 
-ADD index.html.j2 /usr/share/nginx/html/
+ADD index.html.j2 /
 ADD swagger-ui-entrypoint.sh /
 
 ENTRYPOINT ["./swagger-ui-entrypoint.sh"]
