@@ -60,7 +60,7 @@ containers. Access this at
 [http://192.168.68.68:4194/containers/](http://192.168.68.68:4194/containers/)
 
 - SwaggerUi will be running at
-[http://192.168.68.68:1337](http://192.168.68.68:8080) pointing at Asterisk.
+[http://192.168.68.68:1337](http://192.168.68.68:1337) pointing at Asterisk.
 
 - Asterisk will be running. Point a sip client at 192.168.68.68 using the
 credentials from [asterisk/conf/pjsip.conf](asterisk/conf/pjsip.conf).

@@ -1,6 +1,6 @@
 FROM nginx:1.13.6
 
-ENV SWAGGER_UI_VERSION=2.2.6
+ENV SWAGGER_UI_VERSION=2.2.10
 
 RUN apt-get update -qq && \
     DEBIAN_FRONTEND=noninteractive \
