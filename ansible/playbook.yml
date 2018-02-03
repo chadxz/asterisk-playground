@@ -54,6 +54,7 @@
 
     - name: apply security upgrades
       command: unattended-upgrades --verbose
+      changed_when: False
 
     - name: apt-get install linux-image-extra-*
       apt: name={{ item }}
