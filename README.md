@@ -57,7 +57,7 @@ Once deployed, a few services will be available on the vm:
 
 - cAdvisor will be running, providing monitoring for the system and
 containers. Access this at
-[http://192.168.68.68:4194/containers/](http://192.168.68.68:4194/containers/)
+[http://192.168.68.68:8080/containers/](http://192.168.68.68:8080/containers/)
 
 - SwaggerUi will be running at
 [http://192.168.68.68:1337](http://192.168.68.68:1337) pointing at Asterisk.
