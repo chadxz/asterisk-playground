@@ -17,9 +17,6 @@ if test -z ${ARI_PASSWORD}; then
   exit 1
 fi
 
-set -x
-
-ls -la /usr/share/nginx/html/
 j2 /usr/share/nginx/html/index.html.j2 > /usr/share/nginx/html/index.html
 rm -f /usr/share/nginx/html/index.html.j2
 
