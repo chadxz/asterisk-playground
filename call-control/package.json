@@ -9,21 +9,21 @@
     "lint": "eslint ."
   },
   "engines": {
-    "node": "^6.9.1",
-    "npm": "^3.10.9"
+    "node": "^8.10.0",
+    "npm": "^5.8.0"
   },
   "author": "Chad McElligott <chad.mcelligott@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "awry": "^2.0.0",
-    "bunyan": "^1.8.1",
+    "awry": "^5.0.0",
+    "bunyan": "^1.8.12",
     "bunyan-format": "^0.2.1",
-    "config": "^1.21.0",
-    "debug": "^2.2.0",
-    "eslint": "^3.1.1",
-    "eslint-config-airbnb-base": "^5.0.0",
-    "eslint-plugin-import": "^1.12.0",
-    "readable-stream": "^2.1.4",
-    "rxjs": "^5.0.0-rc.1"
+    "config": "^1.30.0",
+    "debug": "^3.1.0",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.9.0",
+    "readable-stream": "^2.3.5",
+    "rxjs": "^5.5.7"
   }
 }

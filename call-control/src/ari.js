@@ -1,4 +1,5 @@
 'use strict';
+
 const awry = require('awry');
 const Rx = require('rxjs/Rx');
 const config = require('config');
@@ -9,9 +10,11 @@ const restApiUrl = `http://${host}/ari`;
 const eventsUrl = `ws://${host}/ari/events`;
 
 module.exports = {
-  events: Rx.Observable.create(observer => {
+  events: Rx.Observable.create((observer) => {
     const app = ariActions.map(action => action.name);
-    const ws = awry.Events.connect({ url: eventsUrl, username, password, app });
+    const ws = awry.Events.connect({
+      url: eventsUrl, username, password, app
+    });
 
     ws.on('message', observer.next.bind(observer));
     ws.on('error', observer.error.bind(observer));

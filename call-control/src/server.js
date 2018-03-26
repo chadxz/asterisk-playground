@@ -1,4 +1,5 @@
 'use strict';
+
 const config = require('config');
 const log = require('./log');
 const AGI = require('./vendor/digium-agi');
@@ -6,13 +7,13 @@ const ari = require('./ari');
 const ariActions = require('./actions/ari');
 const agiActions = require('./actions/agi');
 
-AGI.createServer(config.port, connection => {
+AGI.createServer(config.port, (connection) => {
 
-  connection.on('error', err => {
+  connection.on('error', (err) => {
     log.error({ err }, 'AGI connection error');
   });
 
-  connection.on('close', evt => {
+  connection.on('close', (evt) => {
     log.debug({ evt }, 'AGI connection closed');
   });
 
@@ -27,12 +28,12 @@ AGI.createServer(config.port, connection => {
   }
 });
 
-ari.events.filter(event => {
+ari.events.filter((event) => {
   return event.type === 'StasisStart';
-}).subscribe(event => {
+}).subscribe((event) => {
   log.debug({ event }, 'Received StasisStart event');
 
-  const action = ariActions.find(action => {
+  const action = ariActions.find((action) => {
     return action.name === event.application;
   });
 
@@ -42,10 +43,10 @@ ari.events.filter(event => {
   }
 
   log.debug({ action }, 'Found corresponding action. executing...');
-  action.execute({ ari, event }).catch(err => {
+  action.execute({ ari, event }).catch((err) => {
     log.error({ err }, 'ARI action encountered an error');
   });
-}, err => {
+}, (err) => {
   log.fatal({ err }, 'ARI subscription encountered an error');
   process.nextTick(() => { throw err; });
 });
