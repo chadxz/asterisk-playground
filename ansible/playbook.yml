@@ -56,18 +56,6 @@
       command: unattended-upgrades --verbose
       changed_when: False
 
-    - name: apt-get install linux-image-extra-*
-      apt: name={{ item }}
-      register: image_extras
-      with_items:
-        - linux-image-extra-{{ uname_output.stdout }}
-        - linux-image-extra-virtual
-
-    - name: set reboot requested after installing linux-image-extra-*
-      set_fact:
-        reboot_requested: True
-      when: image_extras.changed
-
     - name: easy_install pip
       easy_install: name=pip
 
@@ -126,7 +114,7 @@
         filename: docker
 
     - name: install Docker
-      apt: name=docker-ce=17.12.0~ce-0~ubuntu
+      apt: name=docker-ce=18.03.0~ce-0~ubuntu
 
     - name: start Docker
       service: name=docker state=started
@@ -138,7 +126,7 @@
         - vagrant
 
     - name: install Docker python modules for Ansible
-      pip: name=docker version=2.7.0
+      pip: name=docker version=3.2.1
 
     - name: Create Docker daemon.json configuration file
       copy: src=configs/daemon.json dest=/etc/docker/daemon.json
@@ -190,7 +178,7 @@
     - name: launch cadvisor container
       docker_container:
         name: cadvisor
-        image: google/cadvisor:v0.28.3
+        image: google/cadvisor:v0.29.0
         restart_policy: always
         state: started
         memory: 256MB
