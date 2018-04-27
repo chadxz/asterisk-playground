@@ -15,15 +15,15 @@
   "author": "Chad McElligott <chad.mcelligott@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "awry": "^5.0.0",
+    "awry": "^6.0.0",
     "bunyan": "^1.8.12",
     "bunyan-format": "^0.2.1",
     "config": "^1.30.0",
     "debug": "^3.1.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.9.0",
-    "readable-stream": "^2.3.5",
-    "rxjs": "^5.5.7"
+    "eslint-plugin-import": "^2.11.0",
+    "readable-stream": "^2.3.6",
+    "rxjs": "^6.0.0"
   }
 }
