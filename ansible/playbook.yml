@@ -208,7 +208,7 @@
       # poll 0 means "fire and forget"
       poll: 0
       register: reboot
-      when: not reboot_required|skipped() and reboot_required.changed
+      when: reboot_required is not skipped() and reboot_required.changed
 
     - name: wait for restart
       local_action: wait_for
@@ -217,7 +217,7 @@
         delay=15
         timeout=300
       become: no
-      when: not reboot|skipped
+      when: reboot is not skipped
 
     #
     # Clone applications
