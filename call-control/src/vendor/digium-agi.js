@@ -1,6 +1,4 @@
-// This is a fork of ding-dong, from NPM. It fixes some of the
-// stupidities of ding-dong and returns Promises from methods.
-
+// This is an old fork of ding-dong, from NPM. Needs to be updated to something else.
 'use strict';
 var Readable = require('readable-stream');
 var EventEmitter = require('events').EventEmitter;

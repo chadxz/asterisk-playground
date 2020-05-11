@@ -1,5 +1,4 @@
 'use strict';
-
 const log = require('../../log');
 
 module.exports = {
@@ -13,11 +12,12 @@ module.exports = {
    *
    * @param {object} params
    * @param {object} params.ari The ari library
+   * @param {object} params.ari.api The ari API instance
    * @param {object} params.event The stasis start event
    * @param {string} params.event.channel.id The id of the incoming channel
    * @returns {Promise}
    **/
-  execute(params) {
+  async execute(params) {
     const {
       ari: { api },
       event: {
@@ -26,8 +26,7 @@ module.exports = {
     } = params;
     log.debug({ channelId }, 'executing ari music on hold');
 
-    return api.channels.answer({ channelId }).then(() => {
-      return api.channels.startMusicOnHold({ channelId });
-    });
+    await api.channels.answer({ channelId })
+    await api.channels.startMusicOnHold({ channelId });
   },
 };

@@ -1,5 +1,4 @@
 'use strict';
-
 const log = require('../../log');
 
 module.exports = {
@@ -9,16 +8,11 @@ module.exports = {
    * @param {object} connection The agi connection
    * @returns {Promise}
    **/
-  execute(connection) {
+  async execute(connection) {
     log.debug('executing agi music on hold');
 
-    return connection
-      .answer()
-      .then(() => {
-        return connection.exec('PLAYBACK silence/3');
-      })
-      .then(() => {
-        return connection.exec('MUSICONHOLD');
-      });
+    await connection.answer();
+    await connection.exec('PLAYBACK silence/3');
+    await connection.exec('MUSICONHOLD');
   },
 };

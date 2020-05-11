@@ -1,5 +1,4 @@
 'use strict';
-
 const log = require('../../log');
 
 module.exports = {
@@ -11,10 +10,10 @@ module.exports = {
    * @param {*} args The arguments to pass to the application
    * @returns {Promise}
    */
-  execute(connection, applicationName, ...args) {
+  async execute(connection, applicationName, ...args) {
     log.debug('placing channel into stasis');
 
     const params = `"${[applicationName, ...args].concat(',')}"`;
-    return connection.exec('Stasis', params);
+    await connection.exec('Stasis', params);
   },
 };
