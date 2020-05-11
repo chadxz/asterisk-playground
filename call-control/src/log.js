@@ -8,9 +8,7 @@ const config = require('config');
 function createLogger() {
   const { pretty, color, level } = config.log;
 
-  const stream = pretty ?
-    bformat({ color, outputMode: 'short' }) :
-    process.stdout;
+  const stream = pretty ? bformat({ color, outputMode: 'short' }) : process.stdout;
 
   const useStream = level !== 'silent';
 
@@ -34,8 +32,8 @@ function createLogger() {
         }
 
         return result;
-      }
-    }
+      },
+    },
   });
 }
 

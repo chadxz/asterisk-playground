@@ -3,7 +3,6 @@
 const log = require('../../log');
 
 module.exports = {
-
   /**
    * Place the channel into stasis and execute the provided application
    *
@@ -17,5 +16,5 @@ module.exports = {
 
     const params = `"${[applicationName, ...args].concat(',')}"`;
     return connection.exec('Stasis', params);
-  }
+  },
 };

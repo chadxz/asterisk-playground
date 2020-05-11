@@ -3,7 +3,6 @@
 const log = require('../../log');
 
 module.exports = {
-
   /**
    * Play music on hold indefinitely
    *
@@ -13,10 +12,13 @@ module.exports = {
   execute(connection) {
     log.debug('executing agi music on hold');
 
-    return connection.answer().then(() => {
-      return connection.exec('PLAYBACK silence/3');
-    }).then(() => {
-      return connection.exec('MUSICONHOLD');
-    });
-  }
+    return connection
+      .answer()
+      .then(() => {
+        return connection.exec('PLAYBACK silence/3');
+      })
+      .then(() => {
+        return connection.exec('MUSICONHOLD');
+      });
+  },
 };

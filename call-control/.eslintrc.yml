@@ -1,0 +1,19 @@
+---
+root: true
+extends:
+  - standard
+  - prettier
+  - prettier/standard
+  - plugin:eslint-comments/recommended
+plugins:
+  - standard
+  - prettier
+  - eslint-comments
+rules:
+  prettier/prettier: error
+env:
+  es6: true
+  node: true
+parserOptions:
+  ecmaVersion: 9
+  sourceType: script

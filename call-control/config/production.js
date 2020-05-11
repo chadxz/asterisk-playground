@@ -2,6 +2,6 @@
 
 module.exports = {
   log: {
-    color: false
-  }
+    color: false,
+  },
 };

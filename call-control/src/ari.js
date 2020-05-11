@@ -1,7 +1,7 @@
 'use strict';
-
 const awry = require('awry');
-const Rx = require('rxjs/Rx');
+const { Observable } = require('rxjs');
+const { share } = require('rxjs/operators');
 const config = require('config');
 const ariActions = require('./actions/ari');
 
@@ -10,10 +10,13 @@ const restApiUrl = `http://${host}/ari`;
 const eventsUrl = `ws://${host}/ari/events`;
 
 module.exports = {
-  events: Rx.Observable.create((observer) => {
-    const app = ariActions.map(action => action.name);
+  events: new Observable((observer) => {
+    const app = ariActions.map((action) => action.name);
     const ws = awry.Events.connect({
-      url: eventsUrl, username, password, app
+      url: eventsUrl,
+      username,
+      password,
+      app,
     });
 
     ws.on('message', observer.next.bind(observer));
@@ -23,7 +26,7 @@ module.exports = {
     // return value called upon subscription cancellation
     // to cleanup the observable's state.
     return ws.close.bind(ws);
-  }).share(),
+  }).pipe(share()),
 
-  api: new awry.API({ username, password, baseUrl: restApiUrl })
+  api: new awry.API({ username, password, baseUrl: restApiUrl }),
 };

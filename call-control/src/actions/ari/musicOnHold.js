@@ -3,7 +3,6 @@
 const log = require('../../log');
 
 module.exports = {
-
   /**
    * The ari application name
    */
@@ -19,11 +18,16 @@ module.exports = {
    * @returns {Promise}
    **/
   execute(params) {
-    const { ari: { api }, event: { channel: { id: channelId } } } = params;
+    const {
+      ari: { api },
+      event: {
+        channel: { id: channelId },
+      },
+    } = params;
     log.debug({ channelId }, 'executing ari music on hold');
 
     return api.channels.answer({ channelId }).then(() => {
       return api.channels.startMusicOnHold({ channelId });
     });
-  }
+  },
 };

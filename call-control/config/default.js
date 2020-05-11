@@ -6,11 +6,11 @@ module.exports = {
     logUncaughtException: true,
     pretty: true,
     level: 'debug',
-    color: true
+    color: true,
   },
   ari: {
     host: 'localhost:8088',
     username: 'asterisk',
-    password: 'asterisk'
-  }
+    password: 'asterisk',
+  },
 };
