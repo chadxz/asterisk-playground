@@ -30,34 +30,27 @@
       changed_when: false
 
     - name: apt-get install apt https support
-      apt: name={{ item }}
-      with_items:
-        - apt-transport-https
-        - ca-certificates
-        - software-properties-common
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - software-properties-common
 
     #
     # Required system dependencies for this playbook
     #
     - name: install dev dependencies
-      apt: name={{ item }}
-      with_items:
-        - python-dev
-        - python-setuptools
-        - git
-        - unattended-upgrades
-
-    - name: Read uname
-      command: uname -r
-      register: uname_output
-      changed_when: False
+      apt:
+        name:
+          - git
+          - unattended-upgrades
 
     - name: apply security upgrades
       command: unattended-upgrades --verbose
       changed_when: False
 
-    - name: easy_install pip
-      easy_install: name=pip
+    - name: apt-get install pip3
+      apt: name=python3-pip
 
     #
     # Setup Git server
@@ -107,30 +100,44 @@
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
 
+    - name: Make configuration directory for Docker
+      file: path=/etc/docker owner=root group=root mode=0770 state=directory
+
+    - name: Create Docker daemon.json configuration file
+      copy: src=configs/daemon.json dest=/etc/docker/daemon.json
+      notify: restart docker
+
     - name: apt-add-repo https://download.docker.com/linux/ubuntu
       apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+        # temporarily hardcode 'bionic' as the distribution release until focal is available
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
         state: present
         filename: docker
 
-    - name: install Docker
-      apt: name=docker-ce=18.03.0~ce-0~ubuntu
+    # prevent unintentional docker upgrades
+    - name: cp docker-engine /etc/apt/preferences.d/
+      copy:
+        dest: /etc/apt/preferences.d/docker-engine
+        content: |
+          Package: docker-ce
+          Pin: version 5:19.03.8*
+          Pin-Priority: 1002
 
-    - name: start Docker
-      service: name=docker state=started
+    # install the pinned version of docker
+    - name: apt-get install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+      register: docker_install
+
+    - name: pip install docker
+      pip: name=docker version=4.2.0
 
     - name: add users to docker group
       user: name={{ item }} groups=docker append=yes
       with_items:
         - '{{ PLAYGROUND_USER }}'
         - vagrant
-
-    - name: install Docker python modules for Ansible
-      pip: name=docker version=3.2.1
-
-    - name: Create Docker daemon.json configuration file
-      copy: src=configs/daemon.json dest=/etc/docker/daemon.json
-      notify: restart docker
 
     - name: enable memory cgroup and swap accounting for Docker
       replace:
@@ -151,26 +158,14 @@
     #
     # Setup docker-gc
     #
-    - name: download docker-gc
-      tags: docker-gc
-      get_url:
-        url: https://raw.githubusercontent.com/spotify/docker-gc/71d2a57d062902595834e2918a008cebedaff18f/docker-gc
-        dest: /usr/local/sbin/docker-gc
-        mode: 0755
-        checksum: sha256:98ea7fa6630aa2e31d5da58033b07cf09cdbd94b0847c167631e346c1fbc2586
-
-    - name: install docker-gc in crontab to run every two hours
-      tags: docker-gc
+    - name: install docker-gc in crontab
       cron:
         name: docker-gc
-        minute: 0
-        hour: '*/2'
-        job: GRACE_PERIOD_SECONDS=7200 FORCE_IMAGE_REMOVAL=1 FORCE_CONTAINER_REMOVAL=1 /usr/local/sbin/docker-gc >> /var/log/docker-gc.log
-        user: root
-
-    - name: setup docker-gc logrotation
-      tags: docker-gc
-      copy: src=configs/logrotate.conf dest=/etc/logrotate.d/docker-gc.conf
+        minute: '0'
+        hour: '*/2' # every 2 hours
+        job: >
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
+          -v /etc:/etc -e GRACE_PERIOD_SECONDS=86400 spotify/docker-gc
 
     #
     # Setup cAdvisor
@@ -178,7 +173,7 @@
     - name: launch cadvisor container
       docker_container:
         name: cadvisor
-        image: google/cadvisor:v0.29.0
+        image: google/cadvisor:v0.33.0
         restart_policy: always
         state: started
         memory: 256MB
@@ -186,9 +181,10 @@
           - 8080:8080
         volumes:
           - /:/rootfs:ro
-          - /var/run:/var/run:rw
+          - /var/run:/var/run:ro
           - /sys:/sys:ro
           - /var/lib/docker/:/var/lib/docker:ro
+          - /dev/disk/:/dev/disk:ro
 
     #
     # Reboot if needed
@@ -199,25 +195,9 @@
       failed_when: False
       changed_when: reboot_requested is defined or reboot_required.stdout == 'REBOOT'
 
-    # Reboot; see https://support.ansible.com/hc/en-us/articles/201958037-Reboot-a-server-and-wait-for-it-to-come-back
-    # esp. the comments
     - name: reboot
-      # sleep gives async task time to kick off
-      shell: 'sleep 2 && shutdown -r now "ansible: reboot-required detected; restarting"'
-      async: 5
-      # poll 0 means "fire and forget"
-      poll: 0
-      register: reboot
-      when: reboot_required is not skipped() and reboot_required.changed
-
-    - name: wait for restart
-      local_action: wait_for
-        host={{ inventory_hostname }}
-        port=22
-        delay=15
-        timeout=300
-      become: no
-      when: reboot is not skipped
+      reboot: reboot_timeout=300
+      when: reboot_required is not skipped and reboot_required.changed
 
     #
     # Clone applications
@@ -225,11 +205,11 @@
     - name: push source to remote
       become: false
       local_action: >
-        command warn="no" git push --force
+        command warn="no" git push --all --force
           --repo git@{{ VM_ADDRESS }}:/opt/git/{{ REPO_NAME }}.git
       tags: deploy
 
-    - name: pull source into working directory
+    - name: clone source into working directory
       git:
         repo: /opt/git/{{ REPO_NAME }}.git/
         dest: /usr/src/{{ REPO_NAME }}/
@@ -255,7 +235,6 @@
         restart_policy: always
         network_mode: host
       tags: deploy
-
 
     #
     # Setup swagger-ui
@@ -313,6 +292,7 @@
 
     - name: restart docker
       service: name=docker state=restarted
+      when: docker_install is not defined or not docker_install.changed
 
     - name: restart journald
       service: name=systemd-journald state=restarted

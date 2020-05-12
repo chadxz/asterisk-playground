@@ -7,7 +7,12 @@ virtual machine. Comes with Dockerized Asterisk and a Node.js AGI + ARI app.
 
 ### pre-reqs
 
-To get your computer ready to run the ansible scripts:
+Things you'll need locally for Ansible
+
+- An [ssh key](https://help.github.com/articles/generating-an-ssh-key/)
+- [Python 3](https://www.python.org/downloads/) installed. On Mac I use [homebrew](https://brew.sh/).
+- [pipx](https://github.com/pipxproject/pipx) installed. On Mac I use [homebrew](https://brew.sh/).
+- [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html) installed. Using pipx above.
 
 - Ensure you have an [ssh key](https://help.github.com/articles/generating-an-ssh-key/)
 
